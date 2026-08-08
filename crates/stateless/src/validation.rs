@@ -17,7 +17,7 @@ use alloy_eips::eip7928::{
 use alloy_primitives::{B256, keccak256};
 use reth_chainspec::{EthChainSpec, EthereumHardforks};
 use reth_consensus::ConsensusError;
-use reth_consensus::{Consensus, HeaderValidator};
+use reth_consensus::{Consensus, HeaderValidator, TransactionRoot};
 use reth_ethereum_consensus::{EthBeaconConsensus, validate_block_post_execution};
 use reth_ethereum_primitives::{Block, EthPrimitives, EthereumReceipt};
 use reth_evm::{
@@ -190,16 +190,22 @@ where
         witness,
         chain_spec,
         evm_config,
+        None,
     )
 }
 
 /// Performs stateless validation of a block using a custom `StatelessTrie` implementation.
+///
+/// `transaction_root` lets a caller that already derived the block's transaction root hand it over
+/// rather than have it recomputed, which a caller reconstructing the block from a consensus-layer
+/// payload always has. It must equal `current_block.body().calculate_tx_root()`.
 pub fn stateless_validation_with_trie<T, ChainSpec, E>(
     current_block: Block,
     public_keys: Vec<UncompressedPublicKey>,
     witness: ExecutionWitness,
     chain_spec: Arc<ChainSpec>,
     evm_config: E,
+    transaction_root: Option<TransactionRoot>,
 ) -> Result<StatelessValidationOutput, StatelessValidationError>
 where
     T: StatelessTrie,
@@ -213,6 +219,7 @@ where
         witness,
         chain_spec,
         evm_config,
+        transaction_root,
     )
 }
 
@@ -232,15 +239,19 @@ where
         witness,
         chain_spec,
         evm_config,
+        None,
     )
 }
 
 /// Performs stateless validation of an already-recovered block using a custom `StatelessTrie` implementation.
+///
+/// See [`stateless_validation_with_trie`] for the contract `transaction_root` carries.
 pub fn stateless_validation_recovered_with_trie<T, ChainSpec, E>(
     current_block: RecoveredBlock<Block>,
     witness: ExecutionWitness,
     chain_spec: Arc<ChainSpec>,
     evm_config: E,
+    transaction_root: Option<TransactionRoot>,
 ) -> Result<StatelessValidationOutput, StatelessValidationError>
 where
     T: StatelessTrie,
@@ -273,7 +284,7 @@ where
         None => return Err(StatelessValidationError::MissingAncestorHeader),
     };
 
-    validate_block_consensus(chain_spec.clone(), &current_block, parent)?;
+    validate_block_consensus(chain_spec.clone(), &current_block, parent, transaction_root)?;
 
     let (mut trie, bytecode) = T::new(witness, parent.state_root)?;
 
@@ -329,6 +340,7 @@ fn validate_block_consensus<ChainSpec>(
     chain_spec: Arc<ChainSpec>,
     block: &RecoveredBlock<Block>,
     parent: &SealedHeader<Header>,
+    transaction_root: Option<TransactionRoot>,
 ) -> Result<(), StatelessValidationError>
 where
     ChainSpec: Send + Sync + EthChainSpec<Header = Header> + EthereumHardforks + Debug,
@@ -338,7 +350,7 @@ where
     consensus.validate_header(block.sealed_header())?;
     consensus.validate_header_against_parent(block.sealed_header(), parent)?;
 
-    consensus.validate_block_pre_execution(block)?;
+    consensus.validate_block_pre_execution_with_tx_root(block, transaction_root)?;
 
     Ok(())
 }
