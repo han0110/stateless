@@ -4,18 +4,18 @@ guest_config() {
     case "${1:?zkVM name is required}" in
         openvm)
             ZKVM_VERSION="v2.1.0-preview"
-            COMPILER_IMAGE="ghcr.io/eth-act/ere/ere-compiler-openvm@sha256:1d673fa4063aed15e039a0fe8cf5915d96e8fb7bd9bd7d2587d1ccf2c21e7eb1"
-            SERVER_IMAGE="ghcr.io/eth-act/ere/ere-server-openvm@sha256:d56f5f59f1560bc2b58e84165accb8dc6586596ca1b9ff53b99862560f7b563c"
+            COMPILER_IMAGE="ghcr.io/eth-act/ere/ere-compiler-openvm@sha256:fb0603963cb3d0942233bc3eec135da9d947cc4e17cf6af6c0bc8cacc89e946d"
+            SERVER_IMAGE="ghcr.io/eth-act/ere/ere-server-openvm@sha256:0232778c6b65a50e7f97690ced4f5e1d7544e4e22484663a444cf85f2568e4b9"
             ;;
         sp1)
             ZKVM_VERSION="v6.4.0"
-            COMPILER_IMAGE="ghcr.io/eth-act/ere/ere-compiler-sp1@sha256:9c4f7fd724e1537415fa03622f006e0ac2544676100fe90e7b2363a88c67170b"
-            SERVER_IMAGE="ghcr.io/eth-act/ere/ere-server-sp1@sha256:561ba9d13e0f4f198c57ad8c76b8320f691635275f6567bcb27b36d4e4159af4"
+            COMPILER_IMAGE="ghcr.io/eth-act/ere/ere-compiler-sp1@sha256:25c59a3ee57883b8af3eec234f53f489c96b60a95478488aaaccde6bf7e3484e"
+            SERVER_IMAGE="ghcr.io/eth-act/ere/ere-server-sp1@sha256:835420a62344a2234cfed99b822c3cedbea14c814db2668c568a47015cbf4d9d"
             ;;
         zisk)
             ZKVM_VERSION="v1.1.0-alpha"
-            COMPILER_IMAGE="ghcr.io/eth-act/ere/ere-compiler-zisk@sha256:0ba9ef646d4359094e6043573530314b6717fab8c3b8bd96a7aa6329d39d172a"
-            SERVER_IMAGE="ghcr.io/eth-act/ere/ere-server-zisk@sha256:4d00a96890a26dc54b523e537e9c1b25a26cf18d166bd3614fc97bbd09317091"
+            COMPILER_IMAGE="ghcr.io/eth-act/ere/ere-compiler-zisk@sha256:cca4b1a7b6841a12e9002f96de714cdbedb46808a43ac5418c47c396ba99e906"
+            SERVER_IMAGE="ghcr.io/eth-act/ere/ere-server-zisk@sha256:bbf717dfe3bfe23fe5fbcdcadf60b21719e8cc0366968a676f4482d450e28dce"
             ;;
         *)
             echo "unsupported zkVM: $1" >&2

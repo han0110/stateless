@@ -15,7 +15,7 @@ Releases also contain `SHA256SUMS` and GitHub artifact attestations.
 
 ## Build
 
-The build scripts use digest-pinned ERE v0.16.2 compiler and server images:
+The build scripts use digest-pinned ERE v0.16.3 compiler and server images:
 
 ```bash
 scripts/guests/build.sh openvm output
